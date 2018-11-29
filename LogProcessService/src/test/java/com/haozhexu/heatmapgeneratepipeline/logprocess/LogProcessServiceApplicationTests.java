@@ -12,5 +12,4 @@ public class LogProcessServiceApplicationTests {
 	@Test
 	public void contextLoads() {
 	}
-
 }
