@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="LOG_PATTERN">
+            %d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${hostName} --- [%15.15t] %-40.40c{1.} : %m%n%ex
+        </Property>
+    </Properties>
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        <Flume name="FlumeInfo" compress="false" type="avro" ignoreExceptions="false">
+            <Agent host="0.0.0.0" port="41414"/>
+            <!--输出方式为json-->
+            <!--<JSONLayout/>-->
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Flume>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender" />
+            <appender-ref ref="FlumeInfo"/>
+        </Root>
+    </Loggers>
+</Configuration>
