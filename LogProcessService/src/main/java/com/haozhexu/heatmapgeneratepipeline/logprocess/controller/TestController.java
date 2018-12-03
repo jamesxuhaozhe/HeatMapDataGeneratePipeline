@@ -16,10 +16,6 @@ public class TestController {
         return input;
     }
 
-/*    @GetMapping(value = "/tt")
-    public String testGet() {
-        return "test";
-    }
 
     public static void main(String[] args) {
         int i = 0;
@@ -34,5 +30,5 @@ public class TestController {
             logger.info("input:" + i);
         }
 
-    }*/
+    }
 }
