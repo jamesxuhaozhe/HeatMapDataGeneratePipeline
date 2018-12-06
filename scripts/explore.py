@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import sys
+import csv
 from geopy import distance as dis
 
 def check_arg():
@@ -9,26 +10,47 @@ def check_arg():
         print('Invalid command line input! Your input should be something like \
         python explore.py path_to_file')
 
-def read_file_and_calculate(file_path):
+def extract_csv_lines_from(file_path):
+
+    """Extract lines fron the given file. Essentially every line is a combination of timestamp and longitute and latitude
+    """
+
+    csv_lines = []
     with open(file_path, 'r') as file:
         for line in file:
             data = line.split('\t')
-
+            
+            time_str = data[0].strip()
             long_str = data[1].strip()
             lat_str = data[2].strip()
-            
-            before_location = (float(lat_str), float(long_str))
-            converted_location = get_location_after_convertion(long_str, lat_str)
-            after_location = (converted_location.lat, converted_location.long)
-            
-            distance = 0
-            try:
-                distance = dis.distance(before_location, after_location)
-            except ValueError as error:
-                print('Something went wrong: ({}, {}) | ({}, {})'.format(long_str, lat_str, converted_location.long_str, converted_location.lat_str))
-                print(error)
 
-            print('({}, {})  |  ({}, {}  | distance: {})'.format(long_str, lat_str, converted_location.long, converted_location.lat, distance))
+            csv_lines.append(CsvLine(time_str, long_str, lat_str))
+
+    return csv_lines
+
+
+def write_csv_lines_to_csv(file_path):
+    csv_lines = extract_csv_lines_from(file_path)
+    csv_file_path = file_path + '.csv'
+    with open(csv_file_path, 'w', newline='') as file:
+        field_names = ['datetime', 'longitude', 'long_decimal_len', 'latitude', 'lat_decimal_len']
+        writer = csv.DictWriter(file, fieldnames=field_names)
+        for csv_line in csv_lines:
+            long_decimal_len = get_decimal_len_from_str(csv_line.long_str)
+            lat_decimal_len = get_decimal_len_from_str(csv_line.lat_str)
+            writer.writerow(
+            {'datetime': csv_line.time_str, 
+            'longitude': csv_line.long_str, 
+            'long_decimal_len': str(long_decimal_len), 
+            'latitude': csv_line.lat_str, 
+            'lat_decimal_len': str(lat_decimal_len)
+            })
+
+
+def get_decimal_len_from_str(long_lat_titude):
+    return len(long_lat_titude.split('.')[1])
+    
+
 
 def get_location_after_convertion(long_str, lat_str):
     long_int_part = long_str.split('.')[0]
@@ -71,7 +93,18 @@ class Location(object):
         self.long_str = long_str
         self.lat_str = lat_str
 
+class CsvLine(object):
+
+    time_str = ''
+    long_str = ''
+    lat_str = ''
+
+    def __init__(self, time_str, long_str, lat_str):
+        self.time_str = time_str
+        self.long_str = long_str
+        self.lat_str = lat_str
 
 if __name__ == '__main__':
     check_arg()
-    read_file_and_calculate(sys.argv[1])
+    write_csv_lines_to_csv(sys.argv[1])
+    
